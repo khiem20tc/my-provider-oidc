@@ -1,6 +1,8 @@
 const assert = require('assert');
 const Provider = require('oidc-provider');
 
+require('dotenv').config();
+
 assert(process.env.HEROKU_APP_NAME, 'process.env.HEROKU_APP_NAME missing');
 assert(process.env.PORT, 'process.env.PORT missing');
 assert(process.env.SECURE_KEY, 'process.env.SECURE_KEY missing, run `heroku addons:create securekey`');
