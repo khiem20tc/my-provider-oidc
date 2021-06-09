@@ -10,11 +10,19 @@ db.defaults({
     {
       id: '23121d3c-84df-44ac-b458-3d63a9a05497',
       email: 'foo@example.com',
+      pwd: 'foo',
       email_verified: true,
     },
     {
       id: 'c2ac2b4a-2262-4e2f-847a-a40dd3c4dcd5',
       email: 'bar@example.com',
+      pwd: 'bar',
+      email_verified: false,
+    },
+    {
+      id: 'c2ac2b4b-2262-4e2f-847a-a40dd3c4dcd5',
+      email: 'khiem@example.com',
+      pwd: 'khiem',
       email_verified: false,
     },
   ],
@@ -48,7 +56,7 @@ class Account {
       assert(password, 'password must be provided');
       assert(email, 'email must be provided');
       const lowercased = String(email).toLowerCase();
-      const account = db.get('users').find({ email: lowercased }).value();
+      const account = db.get('users').find({ email: lowercased, pwd: password }).value();
       assert(account, 'invalid credentials provided');
 
       return account.id;

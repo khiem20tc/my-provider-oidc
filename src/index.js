@@ -6,23 +6,33 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Provider = require('oidc-provider');
 
+require('dotenv').config()
+
 assert(process.env.HEROKU_APP_NAME, 'process.env.HEROKU_APP_NAME missing');
 assert(process.env.PORT, 'process.env.PORT missing');
 assert(process.env.SECURE_KEY, 'process.env.SECURE_KEY missing, run `heroku addons:create securekey`');
 assert.equal(process.env.SECURE_KEY.split(',').length, 2, 'process.env.SECURE_KEY format invalid');
 assert(process.env.REDIS_URL, 'process.env.REDIS_URL missing, run `heroku-redis:hobby-dev`');
 
-const RedisAdapter = require('./redis_adapter');
-const jwks = require('./jwks.json');
+//const RedisAdapter = require('./redis_adapter');
+//const jwks = require('./jwks.json');
 
 // simple account model for this application, user list is defined like so
 const Account = require('./account');
 
-const oidc = new Provider(`https://${process.env.HEROKU_APP_NAME}.herokuapp.com`, {
-  adapter: RedisAdapter,
+// const oidc = new Provider(`https://${process.env.HEROKU_APP_NAME}.herokuapp.com`, {
+  const oidc = new Provider(`http://localhost:9866`, {
+  //adapter: RedisAdapter,
   clients: [
     {
       client_id: 'foo',
+      redirect_uris: ['https://jwt.io'], // using jwt.io as redirect_uri to show the ID Token contents
+      response_types: ['id_token'],
+      grant_types: ['implicit'],
+      token_endpoint_auth_method: 'none',
+    },
+    {
+      client_id: 'bar',
       redirect_uris: ['https://jwt.io'], // using jwt.io as redirect_uri to show the ID Token contents
       response_types: ['id_token'],
       grant_types: ['implicit'],
@@ -32,7 +42,7 @@ const oidc = new Provider(`https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
   cookies: {
     keys: process.env.SECURE_KEY.split(','),
   },
-  jwks,
+  //jwks,
 
   // oidc-provider only looks up the accounts by their ID when it has to read the claims,
   // passing it our Account model method is sufficient, it should return a Promise that resolves
